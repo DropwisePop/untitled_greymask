@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
 #include <QFileDialog>
 #include <QShortcut>
 #include <QDebug>
@@ -18,8 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     mImageFileListIndex = 0;
     mImageFileList.append("C:/pics/boats.jpg");
-
-    //loadImageFile();
+ 
+    loadImageFile();
 }
 
 MainWindow::~MainWindow()
@@ -73,30 +72,61 @@ void MainWindow::loadImageFile()
 
     mCanvas.startCanvas(mat, Canvas::BGRA);
     mCanvas.getLayer(1).lumaToAlpha();
+    //the only way this isn't working is some fuckery with pointers...
 
     //Mat canvasMat = mCanvas.getLayerComposite(mCanvas.getLayer(0),
     //                                          mCanvas.getLayer(1),
     //                                          Layer::POST);
 
     Mat canvasMat = mCanvas.getLayer(1).getPostEffectMat();
+    //getPostEffectMat is returning the wrong mat!
+    imwrite("C:/tests/loadImageFile-gpem.png", canvasMat);
 
-    updateCanvasLabel(canvasMat);
+    //updateCanvasLabel(canvasMat);
 }
 
 void MainWindow::updateCanvasLabel(Mat mat)
 {
-    //assuming incoming mat always greyscale
+    imwrite("C:/pics/updatedCanvasLabel.png", mat);
+
     QPixmap pixmap;
-    // Set the color table (used to translate colour indexes to qRgb values)
-    QVector<QRgb> colorTable;
-    for (int i=0; i<256; i++)
-        colorTable.push_back(qRgb(i,i,i));
-    // Copy input Mat
-    const uchar *qImageBuffer = (const uchar*)mat.data;
-    // Create QImage with same dimensions as input Mat
-    QImage img(qImageBuffer, mat.cols, mat.rows, mat.step, QImage::Format_Indexed8);
-    img.setColorTable(colorTable);
-    pixmap = QPixmap::fromImage(img);
+    if(mat.type()==CV_8UC1)
+    {
+        // Set the color table (used to translate colour indexes to qRgb values)
+        QVector<QRgb> colorTable;
+        for (int i=0; i<256; i++)
+            colorTable.push_back(qRgb(i,i,i));
+        // Copy input Mat
+        const uchar *qImageBuffer = (const uchar*)mat.data;
+        // Create QImage with same dimensions as input Mat
+        QImage img(qImageBuffer, mat.cols, mat.rows, mat.step, QImage::Format_Indexed8);
+        img.setColorTable(colorTable);
+        pixmap = QPixmap::fromImage(img);
+    }
+    // 8-bits unsigned, NO. OF CHANNELS=3
+    if(mat.type()==CV_8UC3)
+    {
+        // Copy input Mat
+        const uchar *qImageBuffer = (const uchar*)mat.data;
+        // Create QImage with same dimensions as input Mat
+        QImage img(qImageBuffer, mat.cols, mat.rows, mat.step, QImage::Format_RGB888);
+        pixmap = QPixmap::fromImage(img.rgbSwapped());
+    }
+    // 8-bits unsigned, NO. OF CHANNELS=4
+    if(mat.type()==CV_8UC4)
+    {
+        qDebug() << "ucl, type 4 channels";
+        // Copy input Mat
+        const uchar *qImageBuffer = (const uchar*)mat.data;
+        // Create QImage with same dimensions as input Mat
+        QImage img(qImageBuffer, mat.cols, mat.rows, mat.step, QImage::Format_RGBA8888);    //RGBA or BGRA? potential problem
+        pixmap = QPixmap::fromImage(img.rgbSwapped());
+    }
+    else
+    {
+        qDebug() << "ERROR: Mat could not be converted to QImage or QPixmap.";
+        return;
+    }
 
     ui->imageLabel->setPixmap(pixmap);
     ui->imageLabel->setScaledContents(true);

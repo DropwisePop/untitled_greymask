@@ -1,6 +1,7 @@
 #include "layer.h"
 
 #include <opencv2/imgproc/imgproc.hpp>
+#include <QDebug>
 
 Layer::Layer(Mat matPrePost)
 {
@@ -16,7 +17,6 @@ Mat Layer::getPreEffectMat()
 Mat Layer::getPostEffectMat()
 {
     return mPostEffectMat;
-
 }
 
 void Layer::setPreEffectMat(Mat mat)
@@ -28,6 +28,7 @@ void Layer::setPreEffectMat(Mat mat)
 void Layer::setPostEffectMat(Mat mat)
 {
     mPostEffectMat = mat;
+    qDebug() << "setPostEffectMat";
 }
 
 void Layer::lumaToAlpha()

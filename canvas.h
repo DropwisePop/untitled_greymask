@@ -22,12 +22,12 @@ public:
     Mat getLayerComposite(Layer base, Layer over, Layer::PreOrPostCode code);
     void startCanvas(Mat base, CanvasColorMode mode);
 
+    static Mat makeCheckMat(int rows, int cols, CanvasColorMode mode);
 
 private:
     CanvasColorMode mCanvasColorMode;
     QList<Layer> mLayerSet;
     Mat mLastLayerComposite;
-    Mat makeCheckMat(int rows, int cols, CanvasColorMode mode);
 };
 
 

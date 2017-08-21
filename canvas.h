@@ -18,7 +18,9 @@ public:
 
     enum CanvasColorMode { GREY, BGRA };
 
-    Layer getLayer(int index);
+    const Layer& getLayer(int index);
+    //I AM CONFUSED WHY THIS (const ref return) WORKS
+    //if it is a const reference, why can I apply lumaToAlpha()
     Mat getLayerComposite(Layer base, Layer over, Layer::PreOrPostCode code);
     void startCanvas(Mat base, CanvasColorMode mode);
 

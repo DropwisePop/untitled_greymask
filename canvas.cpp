@@ -8,7 +8,7 @@ Canvas::Canvas()
     mCanvasColorMode = Canvas::BGRA;
 }
 
-Layer Canvas::getLayer(int index)
+const Layer& Canvas::getLayer(int index)
 {
     if(0 <= index && index < mLayerSet.size()){
         return mLayerSet.at(index);

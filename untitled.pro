@@ -27,12 +27,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     canvas.cpp \
-    layer.cpp
+    layer.cpp \
+    utils.cpp
 
 HEADERS += \
         mainwindow.h \
     canvas.h \
-    layer.h
+    layer.h \
+    utils.h
 
 FORMS += \
         mainwindow.ui

@@ -5,12 +5,14 @@
 #include "opencv2/highgui/highgui.hpp"
 using namespace cv;
 
+#include "canvas.h"
+
+
+
 class Layer
 {
 public:
-    Layer(Mat matPrePost);
-
-    enum PreOrPostCode {PRE, POST};
+    Layer(Mat matPrePost, Canvas &parentCanvas);
 
     Mat getPreEffectMat();
     Mat getPostEffectMat();
@@ -21,6 +23,7 @@ public:
     void lumaToAlpha();
 
 private:
+    Canvas mParentCanvas;
     Mat mPreEffectMat;
     Mat mPostEffectMat;
 };

@@ -1,37 +1,34 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
-
 #include <QList>
-#include "layer.h"
-
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
 using namespace cv;
-
-
+class Layer;
 
 class Canvas
 {
 public:
     Canvas();
 
-    enum CanvasColorMode { GREY, BGRA };
+    static Mat makeCheckMat(int rows, int cols);
 
-    const Layer& getLayer(int index);
-    //I AM CONFUSED WHY THIS (const ref return) WORKS
-    //if it is a const reference, why can I apply lumaToAlpha()
-    Mat getLayerComposite(Layer base, Layer over, Layer::PreOrPostCode code);
-    void startCanvas(Mat base, CanvasColorMode mode);
+    void startCanvas(Mat base);
+    Mat getMatComposite(Mat base, Mat over);
+    Layer& getLayer(int index);
 
-    static Mat makeCheckMat(int rows, int cols, CanvasColorMode mode);
+    int getCeiling();
+    void setCeiling(int);
+    int getFloor();
+    void setFloor(int);
 
 private:
-    CanvasColorMode mCanvasColorMode;
     QList<Layer> mLayerSet;
     Mat mLastLayerComposite;
+
+    int mCeiling;
+    int mFloor;
 };
-
-
 
 #endif // CANVAS_H

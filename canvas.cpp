@@ -1,52 +1,63 @@
-#include "canvas.h"
-
 #include <opencv2/imgproc/imgproc.hpp>
+#include "canvas.h"
+#include "layer.h"
+
 #include <QDebug>
 
-Canvas::Canvas()
+Canvas::Canvas(): mCeiling(255), mFloor(0)
 {
-    mCanvasColorMode = Canvas::BGRA;
+    //empty
 }
 
-const Layer& Canvas::getLayer(int index)
+void Canvas::startCanvas(Mat base)
 {
-    if(0 <= index && index < mLayerSet.size()){
-        return mLayerSet.at(index);
-    }
-    throw std::invalid_argument("layer index not in range");
-}
-
-Mat Canvas::getLayerComposite(Layer base, Layer over, Layer::PreOrPostCode code)
-{
-    //THE HARD PART
-}
-
-void Canvas::startCanvas(Mat base, CanvasColorMode mode)
-{
+    //TODO: this NEEDS to delete the layers it contains
     mLayerSet.clear();
 
-    if (base.channels() == 1 && mode == Canvas::BGRA){
-        cvtColor(base, base, CV_GRAY2BGRA);
-    } else if (base.channels() > 1 && mode == Canvas::GREY){
-        cvtColor(base, base, CV_BGRA2GRAY);
-    }
-
-    Layer layer00(makeCheckMat(base.rows, base.cols, mode));
-    Layer layer01(base);
+    Layer layer00(makeCheckMat(base.rows, base.cols), *this);
+    Layer layer01(base, *this);
 
     mLayerSet.append(layer00);
     mLayerSet.append(layer01);
 }
 
-Mat Canvas::makeCheckMat(int rows, int cols, CanvasColorMode mode)
+Mat Canvas::getMatComposite(Mat base, Mat over)
+{
+    //THE HARD PART
+}
+
+Layer& Canvas::getLayer(int index)
+{
+    if(0 <= index && index < mLayerSet.size()){
+        return mLayerSet[index];
+    }
+    throw std::invalid_argument("layer index not in range");
+}
+
+int Canvas::getCeiling()
+{
+    return mCeiling;
+}
+
+void Canvas::setCeiling(int ceiling)
+{
+    mCeiling = ceiling;
+}
+
+int Canvas::getFloor()
+{
+    return mFloor;
+}
+
+void Canvas::setFloor(int floor)
+{
+    mFloor = floor;
+}
+
+Mat Canvas::makeCheckMat(int rows, int cols)
 {
     int checkSize = 8;
-    Mat checkMat;
-    if (mode == Canvas::BGRA){
-        checkMat = Mat(rows, cols, CV_8UC4);
-    } else {
-        checkMat = Mat(rows, cols, CV_8UC1);
-    }
+    Mat checkMat(rows, cols, CV_8UC4);
 
     uchar color = 0;
     uchar colorAtStartOfRow = color;
@@ -73,11 +84,7 @@ Mat Canvas::makeCheckMat(int rows, int cols, CanvasColorMode mode)
             Point bottomRight(bottomRightX, bottomRightY);
 
             Mat ROI = checkMat( Rect(topLeft, bottomRight) );
-            if(checkMat.channels() == 4){
-                ROI.setTo(Scalar(color, color, color, 255));
-            } else {
-                ROI.setTo(Scalar::all(color));
-            }
+            ROI.setTo(Scalar(color, color, color, 255));
 
             if (color == 255){
                 color = 205;
@@ -86,8 +93,9 @@ Mat Canvas::makeCheckMat(int rows, int cols, CanvasColorMode mode)
             }
         }
     }
-
     return checkMat;
 }
+
+
 
 

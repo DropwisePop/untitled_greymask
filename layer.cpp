@@ -1,12 +1,17 @@
-#include "layer.h"
-
 #include <opencv2/imgproc/imgproc.hpp>
+#include "layer.h"
 #include <QDebug>
 
-Layer::Layer(Mat matPrePost)
+
+
+Layer::Layer(Mat matPrePost, Canvas& parentCanvas):
+    mParentCanvas(parentCanvas)
 {
+    if (matPrePost.channels() == 1){
+        cvtColor(matPrePost, matPrePost, CV_GRAY2RGBA);
+    }
     mPreEffectMat = matPrePost;
-    mPostEffectMat = matPrePost;
+    mPostEffectMat = matPrePost;    //TODO: attempt clone
 }
 
 Mat Layer::getPreEffectMat()
@@ -19,37 +24,22 @@ Mat Layer::getPostEffectMat()
     return mPostEffectMat;
 }
 
-void Layer::setPreEffectMat(Mat mat)
-{
-    mPreEffectMat = mat;
-
-}
-
-void Layer::setPostEffectMat(Mat mat)
-{
-    mPostEffectMat = mat;
-    qDebug() << "setPostEffectMat";
-}
-
 void Layer::lumaToAlpha()
 {
-    Mat pre = getPreEffectMat();
-    if(pre.channels() > 1){
-        cvtColor(pre, pre, CV_BGRA2GRAY);
-    }
-    Mat post= Mat(pre.rows, pre.cols, CV_8UC4, Scalar::all(0) );
+    qDebug() << "lumaToAlpha() called";
+    //TODO: this is NOT IDEAL but replacing messes up the contrast
+    Mat post(mPreEffectMat.rows, mPreEffectMat.cols, CV_8UC4, Scalar::all(0) );
 
     //put luma of pre into alpha of post
     const int step = post.channels();
     const int alphaChannelIndex = 3;
     for (int i = 0; i < post.rows; i++){
-        uchar *prow_mat   = pre.ptr(i);
+        uchar *prow_mat   = mPreEffectMat.ptr(i);
         uchar *prow_matMask = post.ptr(i);
         for (int j = 0, k = 0; j!= post.cols * step; j += step, k++){
-            prow_matMask[j + alphaChannelIndex] = ~prow_mat[k];
-        }
+            prow_matMask[j + alphaChannelIndex] = ~prow_mat[j];
+            //TODO: map values
     }
-
-    setPostEffectMat(post);
+    mPostEffectMat = post;
 }
 

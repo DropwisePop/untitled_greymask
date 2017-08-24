@@ -2,8 +2,11 @@
 #define MAINWINDOW_H
 
 #include <QStringList>
+#include <QLabel>
 #include <QMainWindow>
 #include "canvas.h"
+
+
 
 namespace Ui {
 class MainWindow;
@@ -23,19 +26,25 @@ public slots:
     void showPrevImage();
     void saveMat();
 
+    void decrementCeiling();
+    void incrementCeiling();
+    void decrementFloor();
+    void incrementFloor();
+    void decrementCeilingByTen();
+    void incrementCeilingByTen();
+    void decrementFloorByTen();
+    void incrementFloorByTen();
 
 private:
-
     Ui::MainWindow *ui;
 
     void loadImageFile();
-    void updateCanvasLabel(Mat mat);
+    void applyMatEffects();
+    void updateCanvasLabel();
 
     QStringList mImageFileList;
     int mImageFileListIndex;
     Canvas mCanvas;
-
-
 };
 
 #endif // MAINWINDOW_H

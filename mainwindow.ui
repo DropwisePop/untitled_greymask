@@ -33,7 +33,33 @@
       <x>20</x>
       <y>20</y>
       <width>561</width>
-      <height>441</height>
+      <height>401</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="floorLabel">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>450</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>TextLabel</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ceilingLabel">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>430</y>
+      <width>47</width>
+      <height>13</height>
      </rect>
     </property>
     <property name="text">
@@ -42,6 +68,8 @@
    </widget>
    <zorder>imageLabel</zorder>
    <zorder>loadButton</zorder>
+   <zorder>floorLabel</zorder>
+   <zorder>ceilingLabel</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
